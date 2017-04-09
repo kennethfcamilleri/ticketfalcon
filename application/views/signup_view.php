@@ -4,13 +4,14 @@
 
 <?php $attr = array('id' => 'signup_form', 'class' => 'form_horizontal'); ?>
 
-<?php 
-	
-	if($this->session->flashdata('errors')) {
-		echo $this->session->flashdata('errors');
-	}
+<?php if($this->session->flashdata('error')): ?>
 
-?>
+<div class="alert alert-danger alert-dismissable">
+	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  	<strong>Error!</strong> <?php echo $this->session->flashdata('error'); ?>
+</div>
+
+<?php endif; ?>
 
 <?php echo form_open('users/signup',$attr); ?>
 
@@ -21,7 +22,9 @@
 	<?php $data = array(
 		'class' => 'form-control',
 		'name' => 'firstname',
-		'placeholder' => 'Your first name'
+		'placeholder' => 'Your first name',
+		'value' => set_value('firstname'),
+		'required' => 'required'
 		);
 	?>
 
@@ -37,7 +40,9 @@
 	<?php $data = array(
 		'class' => 'form-control',
 		'name' => 'lastname',
-		'placeholder' => 'Your last name'
+		'placeholder' => 'Your last name',
+		'value' => set_value('lastname'),
+		'required' => 'required'
 		);
 	?>
 
@@ -53,7 +58,10 @@
 	<?php $data = array(
 		'class' => 'form-control',
 		'name' => 'email',
-		'placeholder' => 'Your email address'
+		'placeholder' => 'Your email address',
+		'value' => set_value('email'),
+		'type' => 'email',
+		'required' => 'required'
 		);
 	?>
 
@@ -68,7 +76,8 @@
 	<?php $data = array(
 		'class' => 'form-control',
 		'name' => 'password',
-		'placeholder' => 'Your password'
+		'placeholder' => 'Your password',
+		'required' => 'required'
 		);
 	?>
 
@@ -83,7 +92,8 @@
 	<?php $data = array(
 		'class' => 'form-control',
 		'name' => 'confirmpassword',
-		'placeholder' => 'Re-enter password'
+		'placeholder' => 'Re-enter password',
+		'required' => 'required'
 		);
 	?>
 

@@ -20,7 +20,9 @@
 				'event_description' => $this->input->post('description'),
 				'event_location' => $this->input->post('location'),
 				'start_date' => $startdate,
-				'end_date' => $enddate
+				'end_date' => $enddate,
+				'event_active' => 1,
+				'paypal_account' => $this->input->post('paypalemail')
 				);
 
 			$insert_data = $this->db->insert('events',$data);
@@ -44,6 +46,10 @@
 			return $insert_data;	
 		}
 
+		public function insert_payment_data($payment_data) {
+			$this->db->insert('payments',$payment_data);
+		}
+
 		public function create_bookinglines($booking_lines) {
 
 			$insert_data = $this->db->insert_batch('booking_lines',$booking_lines);
@@ -61,8 +67,8 @@
 					'event_id' => $event_id,
 					'ticket_type' => $ticket_type['ticketname'],
 					'ticket_price' => $ticket_type['price'],
-					'quantity_released' => $ticket_type['quantity'],
-					'quantity_remaining' => $ticket_type['quantity']
+					'quantity_available' => $ticket_type['quantity'],
+					'tickets_sold' => 0
 					);
 			}
 
@@ -172,6 +178,13 @@
 	  		$query = $this->db->delete('ticket_types');
 
 	  		return $query;
+		}
+
+		public function delete_event($event_id) {
+			$this->db->where('event_id', $event_id);
+	  		$query = $this->db->delete('events');
+
+	  		return $query;	
 		}
 
 		public function get_recently_added_events() {

@@ -14,23 +14,21 @@
 			// If validation did not pass
 			if ($this->form_validation->run() == False) {
 				$data = array(
-					'errors' => validation_errors()
+					'error' => validation_errors()
 					);
 
 				$this->session->set_flashdata($data);
 
-				redirect('users/signup_form');
 			} // If validation is correct
 			else { 
 				if ($this->user_model->register_user()) {
 
-					$this->session->set_flashdata('registered', 'Sign Up Completed!');
-					redirect('home/index');
+					$this->session->set_flashdata('success', 'Sign Up Complete. Please enter your credentials to login.');
+					redirect('users/login_form');
 				}
 			}
 
 			$data['main_view'] = 'signup_view';
-
 			$this->load->view('layouts/main',$data);
 		}
 
@@ -42,7 +40,7 @@
 			// If validation did not pass
 			if ($this->form_validation->run() == False) {
 				$data = array(
-					'errors' => validation_errors()
+					'error' => validation_errors()
 					);
 
 				$this->session->set_flashdata($data);
@@ -67,21 +65,17 @@
 
 				$this->session->set_userdata($userdata);
 
-				$this->session->set_flashdata('login_success','You have successfully logged in!');
-
 				redirect('home/index');
 
 				}
 				else {
-
-					$this->session->set_flashdata('login_failed','Failed to login!');
-
-					redirect('home/index');
+					$this->session->set_flashdata('error','Failed to login!');
+					redirect('users/login_form');
 				}
 			}
 		}
 
-		public function changepassword() {
+		public function update_password() {
 			$currentpassword = $this->input->post('currentpassword');
 			$newpassword = $this->input->post('newpassword');
 			$confirmpassword = $this->input->post('confirmpassword');
@@ -97,30 +91,29 @@
 				if ($this->form_validation->run() == False) {
 					$this->form_validation->set_error_delimiters('<p class="text-danger">', '</p>'); 
 					$data = array(
-						'errors' => validation_errors()
+						'error' => validation_errors()
 						);
 
 					$this->session->set_flashdata($data);
 
-					redirect('users/accountsettings#changepassword');
+					redirect('users/changepassword');
 				} // If validation is correct
 				else { 
 					if ($this->user_model->update_password($newpassword,$user_id)) {
 
-						$this->session->set_flashdata('password_updated', 'Your password has been succesfully updated!');
-						redirect('users/accountsettings#changepassword');
+						$this->session->set_flashdata('success', 'Your password has been succesfully updated!');
+						redirect('users/changepassword');
 					}
 				}
 			}
 			else {
-				$this->session->set_flashdata('password_error', 'Incorrect Password. Please try again!');
-				redirect('users/accountsettings#changepassword');
+				$this->session->set_flashdata('error', 'Incorrect Password. Please try again!');
+				redirect('users/changepassword');
 			}
-
 
 		}
 
-		public function update() {
+		public function update_contact_info() {
 
 			$user_id = $this->session->userdata('user_id');
 
@@ -131,9 +124,9 @@
 				);
 
 			if ($this->user_model->update_user($data, $user_id)) {
-				$this->session->set_flashdata('user_updated','Your details have been successfully updated!');
+				$this->session->set_flashdata('success','Your details have been successfully updated!');
 
-				redirect('users/accountsettings');
+				redirect('users/contactinfo');
 			}
 		}
 
@@ -150,21 +143,44 @@
 
 		public function bookinghistory() {
 
-			$user_id = $this->session->userdata('user_id');
+			if ($this->session->userdata('logged_in')) {
+				$user_id = $this->session->userdata('user_id');
 
-			$data['main_view'] = "bookinghistory_view";
-			$data['userbookings'] = $this->user_model->get_userbookings($user_id);
+				$data['main_view'] = "bookinghistory_view";
+				$data['userbookings'] = $this->user_model->get_userbookings($user_id);
 
-			$this->load->view('layouts/main',$data);
+				$this->load->view('layouts/main',$data);
+			}
+			else {
+				redirect('users/login_form');
+			}
+
 
 		}
 
-		public function accountsettings() {
-			$data['user_details'] = $this->user_model->get_userdata($this->session->userdata('user_id'));
+		public function changepassword() {
+			if ($this->session->userdata('logged_in')) {
 
-			$data['main_view'] = "accountsettings_view";
+				$data['main_view'] = "changepassword_view";
 
-			$this->load->view('layouts/main',$data);
+				$this->load->view('layouts/main',$data);
+			}
+			else {
+				redirect('users/login_form');
+			}
+		}
+
+		public function contactinfo() {
+			if ($this->session->userdata('logged_in')) {
+				$data['user_details'] = $this->user_model->get_userdata($this->session->userdata('user_id'));
+
+				$data['main_view'] = "contactinfo_view";
+
+				$this->load->view('layouts/main',$data);
+			}
+			else {
+				redirect('users/login_form');
+			}
 		}
 
 		public function logout() {
@@ -182,47 +198,6 @@
 			$data['main_view'] = "signup_view";
 			$this->load->view('layouts/main',$data);
 		}
-
-		// public function show() {
-		// 	$data['result']  = $this->user_model->get_users();
-
-		// 	$this->load->view('users_view',$data);
-		// }
-
-		// public function insert() {
-
-		// 	$user_id = 3;
-		// 	$first_name = "Deelan";
-		// 	$last_name = "Sacco";
-		// 	$email_address = "deelan.sacco@credorax.com";
-		// 	$user_password = "12345";
-
-
-		// 	$this->user_model->create_users([
-		// 		'user_id' => $user_id,
-		// 		'first_name' => $first_name,
-		// 		'last_name' => $last_name,
-		// 		'email_address' => $email_address,
-		// 		'user_password' => $user_password
-
-		// 		]);
-
-		// }
-
-		// public function update() {
-		// 	$user_id = 3;
-		// 	$first_name = "Deez";
-
-		// 	$this->user_model->update_users([
-		// 		'first_name' => $first_name
-		// 		],$user_id);
-		// }
-
-		// public function delete() {
-		// 	$user_id = 3;
-
-		// 	$this->user_model->delete_user($user_id);
-		// }
 	}
 
 ?>

@@ -17,6 +17,15 @@
 
 	    	<br>
 
+	    	<?php if($this->session->flashdata('error')): ?>
+
+			<div class="alert alert-danger alert-dismissable">
+				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			  	<strong>Error!</strong> <?php echo $this->session->flashdata('error'); ?>
+			</div>
+
+			<?php endif; ?>
+
 			<form action="<?php echo base_url();?>events/update_tickettype/<?php echo $tickettype_data->ticket_type_id; ?>" id="editticket_form" class="form_horizontal" method="post" accept-charset="utf-8">
 
 			<div class="form-group">
@@ -42,7 +51,7 @@
 			            <td class="col-sm-4">
 			            	<div class="input-group">
 				            	<span class="input-group-addon">€</span>
-				                <input type="number" min="0.10" max="999" step="any" value="<?php echo $tickettype_data->ticket_price; ?>" name="ticket_price" class="form-control" <?php if ($tickets_booked) { echo "disabled"; } ?> required/>
+				                <input type="number" min="0.10" max="999" step="any" value="<?php echo $tickettype_data->ticket_price; ?>" name="ticket_price" class="form-control" <?php if ($tickets_booked) { echo "readonly"; } ?> required/>
 			                </div>
 			            </td>
 			        </tr>

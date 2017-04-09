@@ -109,7 +109,7 @@
 <div class="panel-group">
 	<div class="panel panel-primary">
 	  <div class="panel-heading">Description</div>
-	  <div class="panel-body"><?php echo $event_details->event_description; ?></div>
+	  <div class="panel-body"><?php echo nl2br($event_details->event_description); ?></div>
 	</div>
 </div>
 

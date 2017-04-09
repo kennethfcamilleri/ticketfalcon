@@ -54,7 +54,7 @@
           <li><a href="<?php echo base_url();?>events/addevent_form/">Create Event</a></li>
           <li><a href="<?php echo base_url();?>events/manage_events/">Manage Events</a></li>
           <li><a href="<?php echo base_url();?>users/bookinghistory">Booking History</a></li>
-          <li><a href="<?php echo base_url();?>users/accountsettings/">Account Settings</a></li>
+          <li><a href="<?php echo base_url();?>users/contactinfo/">Account Settings</a></li>
           <li role="separator" class="divider"></li>
           <li><a href="<?php echo base_url();?>users/login_form">Log Out</a></li>
         </ul>
@@ -79,7 +79,7 @@
     <h2>Welcome to Ticket Falcon</h2>
     <p>Your online event ticketing solution</p>
 
-    <a href="<?php echo base_url();?>events/addevent_form" class="btn btn-md btn-primary" role="button">Create your event</a>
+    <a href="<?php echo base_url();?>events/addevent_form" class="btn btn-md btn-success" role="button">Create your event</a>
 
   </div>
 </div>

@@ -25,10 +25,9 @@
 
 					if($this->event_model->add_tickets()) {
 
-						$this->session->set_flashdata('event_created', 'Event has been successfully created!');
-						redirect('home/index');		
+						$this->session->set_flashdata('success', 'Event has been successfully created!');
+						redirect('events/manage_events');		
 					}
-
 				}
 			}
 		}
@@ -158,6 +157,42 @@
 
 		}
 
+		public function delete($event_id = 0) {
+
+			if (isset($event_id)) {
+
+				if ($this->authorized_user($event_id)) { // user is authorized to delete event
+
+					// check if there are bookings on the event
+					$event_bookings = $this->event_model->get_eventbookings($event_id);
+
+					if (count($event_bookings) > 0) { // event has bookings
+
+						$this->session->set_flashdata('error','Event cannot be deleted as it already has bookings related to it.');
+						redirect('events/manage_events');
+					}
+					else if (count($event_bookings) == 0) { // event has no bookings
+
+						if ($this->event_model->delete_event($event_id)) { // event deleted
+
+							$this->session->set_flashdata('success','The event has been successfully deleted.');
+							redirect('events/manage_events/');
+						}
+						else { // event not deleted
+
+							$this->session->set_flashdata('error','An error occured while trying to delete the event.');
+							redirect('events/manage_events/');
+						}
+					}
+				}
+				else { // page not found or user is not authorized to manage event details 
+					$data['main_view'] = "invalid_url_view";
+
+					$this->load->view('layouts/main',$data);
+				}
+			}	
+		}
+
 		public function authorized_user($event_id) {
 			$event_user = $this->event_model->get_event_user($event_id);
 
@@ -217,12 +252,19 @@
 		}
 
 		public function manage_events() {
-			$user_id = $this->session->userdata('user_id');
 
-			$data['events_summary'] = $this->event_model->get_events_summary($user_id);
-			$data['main_view'] = "manageevents_view";
+			if ($this->session->userdata('logged_in')) {
 
-			$this->load->view('layouts/main',$data);
+				$user_id = $this->session->userdata('user_id');
+
+				$data['events_summary'] = $this->event_model->get_events_summary($user_id);
+				$data['main_view'] = "manageevents_view";
+
+				$this->load->view('layouts/main',$data);
+			}
+			else {
+				redirect('users/login_form');
+			}
 		}
 
 		public function update_tickettype($tickettype_id) {
@@ -232,20 +274,41 @@
 				'quantity_available' => $this->input->post('quantity_available')
 				);
 
+			$quantity_available = $this->input->post('quantity_available');
+
 			$ticket_type_data = $this->event_model->get_tickettype_data($tickettype_id);
 
 			$event_id = $ticket_type_data->event_id;
 
-			if ($this->event_model->update_ticket($tickettype_id, $data)) {
+			// check how many bookings there are on the ticket type
+			$ticket_type_bookings = $this->event_model->get_ticket_type_bookings($tickettype_id);
 
-				$this->session->set_flashdata('success','The ticket type was updated successfuly!');
-				redirect('events/event_tickets/'.$event_id);
-			}
-			else {
 
-				$this->session->set_flashdata('error','An error occured: The record was not deleted!');
-				redirect('events/event_tickets/'.$event_id);
+			if (count($ticket_type_bookings) <= $quantity_available) { // bookings does not exceed quantity available
+
+				if ($this->event_model->update_ticket($tickettype_id, $data)) {
+
+					$this->session->set_flashdata('success','The ticket type was updated successfuly!');
+					redirect('events/event_tickets/'.$event_id);
+				}
+				else {
+
+					$this->session->set_flashdata('error','An error occured while trying to update the ticket type.');
+					redirect('events/event_tickets/'.$event_id);
+				}
 			}
+			else if (count($ticket_type_bookings) > $quantity_available) { // bookings exceed available quantity
+
+				// bookings cannot exceed the quantity available
+
+				$total_bookings = count($ticket_type_bookings);
+
+				$error_msg = "You already have ".$total_bookings." bookings on this ticket type. The quantity cannot be less than this amount.";
+
+				$this->session->set_flashdata('error',$error_msg);
+				redirect('events/edit_ticket/'.$event_id.'/'.$tickettype_id);
+			}
+
 		}
 
 		public function edit_ticket($event_id = 0, $tickettype_id = 0) {
@@ -332,6 +395,7 @@
 
 		public function submit_order() {
 			$order_data = $this->input->post('tickettypes');
+			$total_amount = $this->input->post('total_amount');
 
 			$tickettype_id = $order_data[0]['tickettype_id'];
 			$ticketdata_db = $this->event_model->get_tickettype_data($tickettype_id);
@@ -374,12 +438,29 @@
 
 				if ($this->event_model->create_bookinglines($booking_lines)) {
 					
+					// Create Payment Transaction
+
+					$payment_date = date('Y-m-d H:i:s');
+
+					$payment_data = array(
+						'user_id' => $this->session->userdata('user_id'),
+						'booking_id' => $booking_id,
+						'payment_method_id' => 1,
+						'payment_date' => $payment_date,
+						'payment_amount' => $total_amount
+						);
+
+					$this->event_model->insert_payment_data($payment_data);
+
+					// Create Tickets PDF file
+
 					$pdfFilePath = $this->create_tickets($booking_id,"F");
 					$event_details = $this->event_model->get_booked_event($booking_id);
 
-
+					
 					if ($this->send_email($pdfFilePath, $event_details)) {
 						$data['main_view'] = "ordercompleted_view";
+						$data['booking_id'] = $booking_id;
 						$this->load->view('layouts/main',$data);						
 					}
 					else {
@@ -646,19 +727,46 @@
 			}	
 		}
 
-		public function show($event_id) {
+		public function show($event_id = 0) {
 
-			$data['event_details'] = $this->event_model->get_eventdata($event_id);
-			$data['ticket_types'] = $this->event_model->get_tickets($event_id);
+			if (isset($event_id)) {
 
-			$data['main_view'] = "event_view";
+				if ($this->valid_event($event_id)) { // valid event id
 
-			$this->load->view('layouts/main',$data);	
+					$data['event_details'] = $this->event_model->get_eventdata($event_id);
+					$data['ticket_types'] = $this->event_model->get_tickets($event_id);
+
+					$data['main_view'] = "event_view";
+
+					$this->load->view('layouts/main',$data);	
+				}
+				else { // page not found
+
+					$data['main_view'] = "invalid_url_view";
+					$this->load->view('layouts/main',$data);
+				}
+			}
+		}
+
+		public function valid_event($event_id) {
+			if ($this->event_model->get_eventdata($event_id)) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 
 		public function addevent_form() {
-			$data['main_view'] = "addevent_view";
-			$this->load->view('layouts/main',$data);
+
+			if ($this->session->userdata('logged_in')) {
+				$data['main_view'] = "addevent_view";
+				$this->load->view('layouts/main',$data);
+			}
+			else {
+				redirect('users/login_form');
+			}
+
 		}
 
 	}

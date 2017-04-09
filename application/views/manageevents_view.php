@@ -30,7 +30,7 @@
 	      <div class="list-group-item">
 	        <h4 class="text-primary"><?php echo $event->event_name; ?></h4>
 	        <p><?php echo date('l jS \of F Y h:i A',strtotime($event->start_date)); ?></p>
-	        <p>Tickets Available: <strong><?php echo $event->quantity_available; ?></strong></p>
+	        <p>Total Tickets: <strong><?php echo $event->quantity_available; ?></strong></p>
 	        <p>Tickets Sold: <strong><?php echo $event->tickets_sold; ?></strong></p>
 	        <p>
 	        	<a href="<?php echo base_url();?>events/manage/<?php echo $event->event_id; ?>"><span class="glyphicon glyphicon-cog"></span> Manage</a>&nbsp;&nbsp;

@@ -1,46 +1,4 @@
 
-<p class="bg-success">
-
-<?php 
-
-	// if login is successfull
-
-	if($this->session->flashdata('login_success')) {
-		echo $this->session->flashdata('login_success');
-	}
-
-	// if sign-up is successfull
-
-	if($this->session->flashdata('registered')) {
-		echo $this->session->flashdata('registered');
-	}
-
-
-	// if event is created
-
-	if($this->session->flashdata('event_created')) {
-		echo $this->session->flashdata('event_created');
-	}
-
-?>
-
-</p>
-
-
-<p class="bg-danger">
-
-<?php 
-
-	// if login has failed..
-
-	if($this->session->flashdata('login_failed')) {
-		echo $this->session->flashdata('login_failed');
-	}
-
-?>
-
-</p>
-
 <div class="col-md-10 col-md-offset-1">
 
   <div class="text-left">

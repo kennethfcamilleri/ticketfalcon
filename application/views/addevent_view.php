@@ -55,7 +55,6 @@
 
 </div>
 
-
 <div class="form-group">
 
 	<?php echo form_label('Location:'); ?>
@@ -72,8 +71,6 @@
 
 </div>
 
-
-
 <div class="form-group">
 	<?php echo form_label('Start Date:'); ?>
     <div class='input-group date' id='datetimepicker6'>
@@ -88,7 +85,6 @@
 		?>
 
 		<?php echo form_input($data); ?>
-        <!-- <input type='text' class="form-control" /> -->
         <span class="input-group-addon">
             <span class="glyphicon glyphicon-calendar"></span>
         </span>
@@ -109,7 +105,6 @@
 		?>
 
 		<?php echo form_input($data); ?>
-        <!-- <input type='text' class="form-control" /> -->
         <span class="input-group-addon">
             <span class="glyphicon glyphicon-calendar"></span>
         </span>
@@ -130,7 +125,7 @@
     <tbody>
         <tr>
             <td class="col-sm-4">
-                <input type="text" name="tickets[0][ticketname]" class="form-control" placeholder="e.g. General Admission" required/>
+                <input type="text" name="tickets[0][ticketname]" class="form-control" placeholder="e.g. Early Bird" required/>
             </td>
             <td class="col-sm-3">
                 <input type="number" min="1" max="5000" name="tickets[0][quantity]" class="form-control" required/>
@@ -138,7 +133,7 @@
             <td class="col-sm-3">
             	<div class="input-group">
 	            	<span class="input-group-addon">€</span>
-	                <input type="number" min="0" max="999" step="any" name="tickets[0][price]" class="form-control" required/>
+	                <input type="number" min="0.10" max="999" step="any" name="tickets[0][price]" class="form-control" required/>
                 </div>
             </td>
             <td class="col-sm-2"><a class="deleteRow"></a>
@@ -222,15 +217,10 @@ $(document).ready(function () {
         var row = $("<tr>");
         var columns = "";
 
-        //columns += '<td><input type="text" class="form-control" name="ticketname' + counter + '" placeholder="e.g. Early Bird" required/></td>';
-        //columns += '<td><input type="number" min="1" max="15" class="form-control" name="quantity' + counter + '" required/></td>';
-        //columns += '<td><div class="input-group"><span class="input-group-addon">€</span>';
-        //columns += '<input type="number" min="0" max="999" step="any" class="form-control" name="price' + counter + '" required/></td></div>';
-
         columns += '<td><input type="text" class="form-control" name="tickets[' + counter + '][ticketname]" placeholder="e.g. Early Bird" required/></td>';
         columns += '<td><input type="number" min="1" max="5000" class="form-control" name="tickets[' + counter + '][quantity]" required/></td>';
         columns += '<td><div class="input-group"><span class="input-group-addon">€</span>';
-        columns += '<input type="number" min="0" max="999" step="any" class="form-control" name="tickets[' + counter + '][price]" required/></td></div>';
+        columns += '<input type="number" min="0.10" max="999" step="any" class="form-control" name="tickets[' + counter + '][price]" required/></td></div>';
 
         columns += '<td><input type="button" class="btnDel btn btn-md btn-danger " value="Delete"></td>';
         row.append(columns);

@@ -149,7 +149,7 @@
 </script>
 
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 
 $(document).ready(function () {
     var counter = document.getElementsByClassName("ticket-row").length;
@@ -160,7 +160,7 @@ $(document).ready(function () {
         var row = $("<tr>");
         var columns = "";
 
-        columns += '<td><input type="hidden" name="<?php echo "tickets[". $count ."][ticket_type_id]"?>" value="0"/>';
+        columns += '<td><input type="hidden" name="<?php //echo "tickets[". $count ."][ticket_type_id]"?>" value="0"/>';
         columns += '<input type="text" class="form-control" name="tickets[' + counter + '][ticketname]" placeholder="e.g. Early Bird" required/></td>';
         columns += '<td><input type="number" min="1" max="5000" class="form-control" name="tickets[' + counter + '][quantity]" required/></td>';
         columns += '<td><div class="input-group"><span class="input-group-addon">€</span>';
@@ -179,4 +179,4 @@ $(document).ready(function () {
 
 });
 
-</script>
+</script> -->

@@ -35,13 +35,21 @@
 
 <?php $attr = array('id' => 'login_form', 'class' => 'form_horizontal'); ?>
 
-<?php 
-	
-	if($this->session->flashdata('errors')) {
-		echo $this->session->flashdata('errors');
-	}
+<?php if($this->session->flashdata('success')): ?>
 
-?>
+<div class="alert alert-success alert-dismissable">
+  	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  	<strong>Success!</strong> <?php echo $this->session->flashdata('success'); ?>
+</div>
+
+<?php elseif($this->session->flashdata('error')): ?>
+
+<div class="alert alert-danger alert-dismissable">
+	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  	<strong>Error!</strong> <?php echo $this->session->flashdata('error'); ?>
+</div>
+
+<?php endif; ?>
 
 <?php echo form_open('users/login',$attr); ?>
 
@@ -52,7 +60,9 @@
 	<?php $data = array(
 		'class' => 'form-control',
 		'name' => 'username',
-		'placeholder' => 'Your email address'
+		'placeholder' => 'Your email address',
+		'type' => 'email',
+		'required' => 'required'
 		);
 	?>
 
@@ -67,7 +77,8 @@
 	<?php $data = array(
 		'class' => 'form-control',
 		'name' => 'password',
-		'placeholder' => 'Your password'
+		'placeholder' => 'Your password',
+		'required' => 'required'
 		);
 	?>
 

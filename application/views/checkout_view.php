@@ -53,7 +53,7 @@
 
 		        <tr>
 		            <td class="col-sm-5"></td>
-		            <td class="col-sm-2"></td>
+		            <td class="col-sm-2"><input type="hidden" name="total_amount" value="<?php echo $total_amount; ?>"/></td>
 		            <td class="col-sm-2">Total:</td>
 		            <td class="col-sm-3">&euro;<?php echo $total_amount; ?></td>
 		        </tr>
