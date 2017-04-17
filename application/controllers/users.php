@@ -5,9 +5,9 @@
 
 		public function signup() {
 
-			$this->form_validation->set_rules('firstname','First Name','trim|required|min_length[3]');
-			$this->form_validation->set_rules('lastname','Last Name','trim|required|min_length[3]');
-			$this->form_validation->set_rules('email','Email','trim|required|min_length[3]');
+			$this->form_validation->set_rules('firstname','First Name','trim|required|min_length[2]');
+			$this->form_validation->set_rules('lastname','Last Name','trim|required|min_length[2]');
+			$this->form_validation->set_rules('email','Email','trim|required');
 			$this->form_validation->set_rules('password','Password','trim|required|min_length[3]');
 			$this->form_validation->set_rules('confirmpassword','Confirm Password','trim|required|min_length[3]|matches[password]');
 
@@ -118,12 +118,19 @@
 			$user_id = $this->session->userdata('user_id');
 
 			$data = array(
-				'first_name' => $this->input->post('firstname'),
-				'last_name' => $this->input->post('lastname'),
+				'first_name' => $this->input->post('firstname',true),
+				'last_name' => $this->input->post('lastname',true),
 				'email_address' => $this->input->post('email')
 				);
 
 			if ($this->user_model->update_user($data, $user_id)) {
+
+				$fullname = $this->user_model->get_fullname($user_id);
+				$username = $this->input->post('email');
+
+				$this->session->set_userdata('username', $username);
+				$this->session->set_userdata('fullname', $fullname);
+
 				$this->session->set_flashdata('success','Your details have been successfully updated!');
 
 				redirect('users/contactinfo');

@@ -78,9 +78,9 @@
 			$hashed_password = password_hash($this->input->post('password'), PASSWORD_BCRYPT);
 
 			$data = array(
-				'first_name' => $this->input->post('firstname'),
-				'last_name' => $this->input->post('lastname'),
-				'email_address' => $this->input->post('email'),
+				'first_name' => $this->input->post('firstname',true), // returns POST item with XSS filter
+				'last_name' => $this->input->post('lastname',true), // returns POST item with XSS filter
+				'email_address' => $this->input->post('email',true), // returns POST item with XSS filter
 				'user_password' => $hashed_password
 				);
 

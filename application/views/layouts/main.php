@@ -13,7 +13,7 @@
   -->
 
 
-  <!-- Import bower components for data picker functionality -->
+  <!-- Import assets -->
   <script type="text/javascript" src="<?php echo base_url();?>assets/bower_components/jquery/dist/jquery.min.js"></script>
   <script type="text/javascript" src="<?php echo base_url();?>assets/bower_components/moment/min/moment.min.js"></script>
   <script type="text/javascript" src="<?php echo base_url();?>assets/bower_components/bootstrap/js/bootstrap.min.js"></script>

@@ -16,15 +16,16 @@
 
 			$data = array(
 				'user_id' => $this->session->userdata('user_id'),
-				'event_name' => $this->input->post('title'),
-				'event_description' => $this->input->post('description'),
-				'event_location' => $this->input->post('location'),
+				'event_name' => $this->input->post('title',true),
+				'event_description' => $this->input->post('description',true),
+				'event_location' => $this->input->post('location',true),
 				'start_date' => $startdate,
 				'end_date' => $enddate,
 				'event_active' => 1,
 				'paypal_account' => $this->input->post('paypalemail')
 				);
 
+			// insert data into db
 			$insert_data = $this->db->insert('events',$data);
 
 			return $insert_data;
@@ -58,10 +59,13 @@
 		}
 
 		public function add_tickets() {
-			$ticket_data = $this->input->post('tickets');
+			// get all tickets to be added
+			$ticket_data = $this->input->post('tickets',true);
 
+			// get last insert id
 			$event_id = $this->db->insert_id();
 
+			// loop through all tickets and create data array
 			foreach ($ticket_data as $ticket_type) {
 				$data[] = array(
 					'event_id' => $event_id,
@@ -72,6 +76,7 @@
 					);
 			}
 
+			// insert tickets data into database
 			$insert_data = $this->db->insert_batch('ticket_types',$data);
 
 			return $insert_data;

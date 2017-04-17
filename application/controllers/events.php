@@ -46,9 +46,9 @@
 			$enddate = date("Y-m-d H:i:s", $enddate);
 
 			$data = array(
-				'event_name' => $this->input->post('title'),
-				'event_description' => $this->input->post('description'),
-				'event_location' => $this->input->post('location'),
+				'event_name' => $this->input->post('title',true),
+				'event_description' => $this->input->post('description',true),
+				'event_location' => $this->input->post('location',true),
 				'start_date' => $startdate,
 				'end_date' => $enddate,
 				'paypal_account' => $this->input->post('paypalemail'),
@@ -233,7 +233,7 @@
 		public function add_tickettype($event_id) {
 			$data = array(
 				'event_id' => $event_id,
-				'ticket_type' => $this->input->post('ticket_type'),
+				'ticket_type' => $this->input->post('ticket_type',true),
 				'ticket_price' => $this->input->post('ticket_price'),
 				'quantity_available' => $this->input->post('quantity_available'),
 				'tickets_sold' => 0
@@ -269,7 +269,7 @@
 
 		public function update_tickettype($tickettype_id) {
 			$data = array(
-				'ticket_type' => $this->input->post('ticket_type'),
+				'ticket_type' => $this->input->post('ticket_type',true),
 				'ticket_price' => $this->input->post('ticket_price'),
 				'quantity_available' => $this->input->post('quantity_available')
 				);
@@ -373,16 +373,26 @@
 						redirect('events/event_tickets/'.$event_id);
 					}
 					else { // ticket type has no bookings
-						if ($this->event_model->delete_ticket($tickettype_id)) { // ticket deleted
 
-							$this->session->set_flashdata('success','The ticket type has been successfully deleted.');
+						$tickets = $this->event_model->get_tickets($event_id);
+
+						if (count($tickets) > 1) {
+							if ($this->event_model->delete_ticket($tickettype_id)) { // ticket deleted
+
+								$this->session->set_flashdata('success','The ticket type has been successfully deleted.');
+								redirect('events/event_tickets/'.$event_id);
+							}
+							else { // ticket not deleted
+
+								$this->session->set_flashdata('error','An error occured while trying to delete the ticket type.');
+								redirect('events/event_tickets/'.$event_id);
+							}
+						}
+						else if (count($tickets) == 1) { // Don't delete ticket if only one ticket type is remaining
+							$this->session->set_flashdata('error','You must have at least one ticket type for an event.');
 							redirect('events/event_tickets/'.$event_id);
 						}
-						else { // ticket not deleted
 
-							$this->session->set_flashdata('error','An error occured while trying to delete the ticket type.');
-							redirect('events/event_tickets/'.$event_id);
-						}
 					}
 				}
 				else { // page not found or user is not authorized to delete ticket type
@@ -530,7 +540,6 @@
 				else if ($output_code == "F") {
 					$pdfFilePath = "assets/tickets/ticketfalcon-".time().".pdf";
 				}
-				
 
 	   			$pdf->AddPage('P', // L - landscape, P - portrait
 	            '', '', '', '',
@@ -547,9 +556,6 @@
 				// write the HTML data
 				$pdf->WriteHTML($html,2);
 			}
-
-			// prompt user to save the PDF
-			//$pdf->Output($pdfFilePath, "D");
 
 			// "F" = saves the file directly to the given path
 			// "D" = prompt user to save the PDF
@@ -597,16 +603,6 @@
 		}
 
 		public function htmlticket($ticket_lines) {
-
-			// set the data for the view
-			// $data = array(
-			// 	'event_title' => "Rhythm District pres. DOSEM",
-			// 	'event_date' => "Tuesday 6th of June 2017 10:00 PM",
-			// 	'ticket_type' => "Early Bird",
-			// 	'ticket_price' => "35.00",
-			// 	'ticket_code' => "1000000019",
-			// 	'main_view' => "htmlticket_view"
-			// 	);
 
 			//$data['main_view'] = "htmlticket_view";
 			foreach ($ticket_lines as $ticket_line) {
@@ -678,53 +674,69 @@
 		}
 
 		public function checkout() {
-			$order_data = $this->input->post('tickettypes');
-			$total = 0;
-			$subtotal = 0;
-			$errors = "";
 
-			foreach ($order_data as $order_line) {
+			if ($this->session->userdata('logged_in')) {
 
-				if (isset($order_line['quantity'])) {
+				if ($this->input->post('tickettypes')) {
 
-					if ($order_line['quantity'] != "0") {
-						$tickettype_id = $order_line['tickettype_id'];
-						$ticketdata_db = $this->event_model->get_tickettype_data($tickettype_id);
+					$order_data = $this->input->post('tickettypes');
+					$total = 0;
+					$subtotal = 0;
+					$errors = "";
 
-						$quantity_remaining = $ticketdata_db->quantity_available - $ticketdata_db->tickets_sold;
+					foreach ($order_data as $order_line) {
 
-						if (($quantity_remaining - $order_line['quantity']) < 0) {
-							$errors .= "<p class='bg-warning'>Only ". $quantity_remaining ." ". $ticketdata_db->ticket_type . " ticket(s) remaining!</p>";
+						if (isset($order_line['quantity'])) {
+
+							// check if user has chosen a quantity for this ticket type
+							if ($order_line['quantity'] != "0") {
+								$tickettype_id = $order_line['tickettype_id'];
+								$ticketdata_db = $this->event_model->get_tickettype_data($tickettype_id);
+
+								$quantity_remaining = $ticketdata_db->quantity_available - $ticketdata_db->tickets_sold;
+
+								// check that there is enough quantity remaining
+								if (($quantity_remaining - $order_line['quantity']) < 0) {
+									$errors .= "<p class='bg-warning'>Only ". $quantity_remaining ." ". $ticketdata_db->ticket_type . " ticket(s) remaining!</p>";
+								}
+
+								$subtotal = $ticketdata_db->ticket_price * $order_line['quantity'];
+								$total = $total + $subtotal;
+
+								// create order summary array
+							 	$order_summary[] = array(
+							 		'ticket_type_id' => $tickettype_id,
+							 		'ticket_type' => $ticketdata_db->ticket_type,
+							 		'ticket_price' => $ticketdata_db->ticket_price,
+							 		'quantity' => $order_line['quantity'],
+							 		'subtotal' => $subtotal
+							 		);
+							}
 						}
+					}
 
-						$subtotal = $ticketdata_db->ticket_price * $order_line['quantity'];
-						$total = $total + $subtotal;
+					if ($errors != "") { // display quantity error(s)
+						$this->session->set_flashdata('quantity_errors', $errors);
+						redirect($this->agent->referrer());
+					}
+					else { // display order summary
+						$data = array(
+							'order_summary' => $order_summary,
+							'total_amount' => $total,
+							'main_view' => "checkout_view"
+							);
 
-					 	$order_summary[] = array(
-					 		'ticket_type_id' => $tickettype_id,
-					 		'ticket_type' => $ticketdata_db->ticket_type,
-					 		'ticket_price' => $ticketdata_db->ticket_price,
-					 		'quantity' => $order_line['quantity'],
-					 		'subtotal' => $subtotal
-					 		);
+						$this->load->view('layouts/main',$data);
 					}
 				}
-
-			}
-
-			if ($errors != "") {
-				$this->session->set_flashdata('quantity_errors', $errors);
-				redirect($this->agent->referrer());
+				else {
+					$data['main_view'] = "invalid_url_view";
+					$this->load->view('layouts/main',$data);
+				}
 			}
 			else {
-				$data = array(
-					'order_summary' => $order_summary,
-					'total_amount' => $total,
-					'main_view' => "checkout_view"
-					);
-
-				$this->load->view('layouts/main',$data);
-			}	
+				redirect('users/login_form');
+			}
 		}
 
 		public function show($event_id = 0) {
