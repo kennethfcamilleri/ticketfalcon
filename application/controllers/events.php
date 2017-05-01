@@ -505,15 +505,9 @@
 					);
 			}
 
-			// $ticket_lines = array(
-			// 	'ticket_lines' => $ticket_lines
-			// 	);
-
 			$pdfFilePath = $this->create_pdf_document($ticket_lines, $output_code);
 
 			return $pdfFilePath;
-
-			// $this->htmlticket($ticket_lines);
 		}
 
 		public function create_pdf_document($ticket_lines, $output_code) {
@@ -577,6 +571,7 @@
 		    $config['newline'] = "\r\n";
 
 		    $fullname = $this->session->userdata('fullname');
+		    $email = $this->session->userdata('username');
 
 		    $subject = "Your order for ".$event_details->event_name;
 
@@ -587,7 +582,7 @@
 		    		
 		    $this->email->initialize($config);
 
-			$this->email->to('ticketfalcon.mail@gmail.com');
+			$this->email->to($email);
 			$this->email->from('ticketfalcon.mail@gmail.com','Ticket Falcon');
 			$this->email->subject($subject);
 			$this->email->message($message);
@@ -653,21 +648,6 @@
 
 			// write the HTML data
 			$pdf->WriteHTML($html,2);
-
-			// $pdf->AddPage('P', // L - landscape, P - portrait
-   //          '', '', '', '',
-   //          20, // margin_left
-   //          20, // margin right
-   //          20, // margin top
-   //          20, // margin bottom
-   //          10, // margin header
-   //          10); // margin footer
-
-			// // write CSS data
-			// $pdf->WriteHTML($stylesheet,1);
-
-			// // write the HTML data
-			// $pdf->WriteHTML($html,2);
 
 			// prompt user to save the PDF
 			$pdf->Output($pdfFilePath, "D");
@@ -782,7 +762,6 @@
 		}
 
 	}
-
 
 ?>
 

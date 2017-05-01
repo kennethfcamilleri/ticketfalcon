@@ -37,37 +37,6 @@
       <p>There are currently no events listed at the moment.</p>
 
   <?php endif; ?>
-<!-- 
-    <div class="col-sm-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h5 class="text-primary">Rhythm District pres. DOSEM</h5>
-        </div>
-        <div class="panel-body">
-          <p><span class="glyphicon glyphicon-time"></span> Tuesday March 21 2017 5:30 PM</p>
-          <p><span class="glyphicon glyphicon-map-marker"></span> The Playground, Malta.</p>
-        </div>
-        <div class="panel-footer text-center">
-          <button class="btn btn-primary btn-md">Get Tickets</button>
-        </div>
-      </div> 
-    </div> 
-
-     <div class="col-sm-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h5 class="text-primary">Rhythm District pres. DOSEM</h5>
-        </div>
-        <div class="panel-body">
-          <p><span class="glyphicon glyphicon-time"></span> Tuesday March 21 2017 5:30 PM</p>
-          <p><span class="glyphicon glyphicon-map-marker"></span> The Playground, Malta.</p>
-        </div>
-
-        <div class="panel-footer text-center">
-          <button class="btn btn-primary btn-md">Get Tickets</button>
-        </div>
-      </div> 
-    </div> -->
   <br>
 </div>
 

@@ -7,7 +7,7 @@
 
 			$this->form_validation->set_rules('firstname','First Name','trim|required|min_length[2]');
 			$this->form_validation->set_rules('lastname','Last Name','trim|required|min_length[2]');
-			$this->form_validation->set_rules('email','Email','trim|required');
+			$this->form_validation->set_rules('email','Email','trim|required|is_unique[users.email_address]');
 			$this->form_validation->set_rules('password','Password','trim|required|min_length[3]');
 			$this->form_validation->set_rules('confirmpassword','Confirm Password','trim|required|min_length[3]|matches[password]');
 

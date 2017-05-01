@@ -190,6 +190,7 @@
 
 <?php echo form_close(); ?>
 
+<!-- The below script has been retrieved from https://eonasdan.github.io/bootstrap-datetimepicker/ -->
 <script type="text/javascript">
     $(function () {
         $('#datetimepicker6').datetimepicker({

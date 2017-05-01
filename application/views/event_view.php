@@ -120,6 +120,21 @@
 
 $(document).ready(function(){
 
+	var quantity = 0;
+	var subtotal = 0;
+
+	$('.ticket-type').each(function(i, obj) {
+		$this = $(this);
+		ticketprice = parseFloat($this.find("span.ticket-price").text());
+		ticketquantity = parseInt($this.find("select.quantity-dropdown").val());
+	    subtotal = subtotal + (ticketprice * ticketquantity);
+	    quantity = quantity + ticketquantity;
+	});
+
+	$("#totalquantity").text(quantity);
+	$("#subtotal").text(subtotal.toFixed(2));
+	
+
     $(".quantity-dropdown").change(function(){
 
 		var quantity = 0;

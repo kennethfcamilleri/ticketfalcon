@@ -81,9 +81,11 @@
 		    </div>
 		  </div>
 
-		  <div class="form-group">
+		  <div class="form-group text-center">
 		    <div>
-		      <button type="submit" class="btn btn-success">Make Payment</button>
+        		<button type="button" class="btn btn-default" onclick="javascript:window.history.go(-1);">Back</button>
+				&nbsp;&nbsp;
+		      	<button type="submit" class="btn btn-success">Make Payment</button>
 		    </div>
 		  </div>
 	  </div>
